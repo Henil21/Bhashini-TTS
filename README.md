@@ -35,7 +35,7 @@ hifigan.onnx              (mel spectrogram -> raw waveform)
 ## Repository Structure
 ```
 Bhashini-TTS/
-├── models/
+├── model_gu_male/
 │   ├── fs2_encoder.onnx        # FastSpeech2 encoder (text -> hidden + durations)
 │   ├── fs2_decoder.onnx        # FastSpeech2 decoder (hidden -> mel spectrogram)
 │   ├── hifigan.onnx            # HiFi-GAN vocoder (mel -> waveform)
