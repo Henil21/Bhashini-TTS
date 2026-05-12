@@ -6,65 +6,42 @@
 
 ## Overview
 
-This repository contains the full inference pipeline for a **privacy-first, low-latency Indic TTS system** supporting Gujarati (male & female) and Hindi (male) voices. The models are derived from the [IIT Madras FastSpeech2-HS](https://github.com/smtiitm/Fastspeech2_HS) architecture and are optimized for edge/mobile deployment — no internet connection required at inference time.
+This repository contains the full inference pipeline for a **privacy-first, low-latency Indic TTS system** supporting Gujarati (male & female), Hindi (male & female), and Bengali (female) voices. The models are derived from the [IIT Madras FastSpeech2-HS](https://github.com/smtiitm/Fastspeech2_HS) architecture and are optimized for edge/mobile deployment — no internet connection required at inference time.
 
 | Language | Voice | Acoustic Model | Vocoder | Format |
 |----------|-------|---------------|---------|--------|
 | Gujarati | Male | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
 | Gujarati | Female | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
 | Hindi | Male | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
+| Hindi | Female | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
+| Bengali | Female | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
 
 ---
 
 ## Repository Structure
 
+Each language follows a consistent folder layout:
+
 ```
 Bhashini-TTS/
-├── Gujarati/
-│   ├── model_gu_male/                    # Gujarati male voice assets
-│   │   ├── config.yaml                   # Model configuration
-│   │   ├── feats_stats.npz               # Mel denormalization stats (count/sum/sum_square)
-│   │   ├── energy_stats.npz              # Energy normalization stats
-│   │   ├── pitch_stats.npz               # Pitch normalization stats
-│   │   ├── feats_type                    # Feature type descriptor
-│   │   ├── fs2_encoder_male.onnx         # FastSpeech2 encoder (FP32)
-│   │   ├── fs2_encoder_male_int8.onnx    # FastSpeech2 encoder (INT8 quantized)
-│   │   ├── fs2_decoder_male.onnx         # FastSpeech2 decoder (FP32)
-│   │   ├── fs2_decoder_male_int8.onnx    # FastSpeech2 decoder (INT8 quantized)
-│   │   ├── hifigan_male.onnx             # HiFi-GAN vocoder (FP32)
-│   │   └── hifigan_male_int8.onnx        # HiFi-GAN vocoder (INT8 quantized)
-│   │
-│   └── model_gu_female/                  # Gujarati female voice assets
-│       ├── config.yaml
-│       ├── feats_stats.npz
-│       ├── energy_stats.npz
-│       ├── pitch_stats.npz
-│       ├── feats_type
-│       ├── fs2_encoder_female.onnx
-│       ├── fs2_encoder_female_int8.onnx
-│       ├── fs2_decoder_female.onnx
-│       ├── fs2_decoder_female_int8.onnx
-│       ├── hifigan_female.onnx
-│       └── hifigan_female_int8.onnx
+├── <Language>/
+│   └── <Language>_<Gender>/
+│       ├── config.yaml                       # Model configuration
+│       ├── feats_stats.npz                   # Mel denormalization stats (count/sum/sum_square)
+│       ├── energy_stats.npz                  # Energy normalization stats
+│       ├── pitch_stats.npz                   # Pitch normalization stats
+│       ├── feats_type                        # Feature type descriptor
+│       ├── <lang>                            # Token/vocab file
+│       ├── <lang>_encoder_<gender>.onnx      # FastSpeech2 encoder (FP32)
+│       ├── <lang>_encoder_<gender>_int8.onnx # FastSpeech2 encoder (INT8 quantized)
+│       ├── <lang>_decoder_<gender>.onnx      # FastSpeech2 decoder (FP32)
+│       ├── <lang>_decoder_<gender>_int8.onnx # FastSpeech2 decoder (INT8 quantized)
+│       ├── <lang>_hifigan_<gender>.onnx      # HiFi-GAN vocoder (FP32)
+│       └── <lang>_hifigan_<gender>_int8.onnx # HiFi-GAN vocoder (INT8 quantized)
 │
-├── Hindi/
-│   └── Hindi_Male/                       # Hindi male voice assets
-│       ├── config.yaml
-│       ├── feats_stats.npz
-│       ├── energy_stats.npz
-│       ├── pitch_stats.npz
-│       ├── feats_type
-│       ├── hindi                         # Token/vocab file
-│       ├── hindi_encoder_male.onnx       # FastSpeech2 encoder (FP32)
-│       ├── hindi_encoder_male_int8.onnx  # FastSpeech2 encoder (INT8 quantized)
-│       ├── hindi_decoder_male.onnx       # FastSpeech2 decoder (FP32)
-│       ├── hindi_decoder_male_int8.onnx  # FastSpeech2 decoder (INT8 quantized)
-│       ├── hindi_hifigan_male.onnx       # HiFi-GAN vocoder (FP32)
-│       └── hindi_hifigan_male_int8.onnx  # HiFi-GAN vocoder (INT8 quantized)
-│
-├── gu_inference_onnx.ipynb               # Gujarati male inference notebook
-├── gu-female.ipynb                       # Gujarati female inference notebook
-├── .gitattributes                        # Git LFS config for .onnx files
+├── gu_inference_onnx.ipynb                   # Gujarati male inference notebook
+├── gu-female.ipynb                           # Gujarati female inference notebook
+├── .gitattributes                            # Git LFS config for .onnx files
 └── README.md
 ```
 
@@ -75,7 +52,7 @@ Bhashini-TTS/
 The TTS pipeline is split into three stages:
 
 ```
-Text (Gujarati / Hindi)
+Text (Gujarati / Hindi / Bengali / ...)
      │
      ▼
 [G2P + Tokenization]          TTSDurAlignPreprocessor + language charmap
@@ -151,7 +128,7 @@ The ONNX models are designed for deployment via **ONNX Runtime for Android**.
 - INT8 quantized models for CPU inference (significant latency reduction)
 - `AudioTrack` for PCM playback (streaming with overlap for low latency)
 
-**Asset placement in Android project (example: Gujarati Female):**
+**Asset placement in Android project:**
 
 ```
 app/src/main/assets/
@@ -159,10 +136,10 @@ app/src/main/assets/
 ├── feats_stats.npz
 ├── energy_stats.npz
 ├── pitch_stats.npz
-├── multilingualcharmap.json
-├── fs2_encoder_female_int8.onnx
-├── fs2_decoder_female_int8.onnx
-└── hifigan_female_int8.onnx
+├── <lang>                            # token/vocab file
+├── <lang>_encoder_<gender>_int8.onnx
+├── <lang>_decoder_<gender>_int8.onnx
+└── <lang>_hifigan_<gender>_int8.onnx
 ```
 
 ---
