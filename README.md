@@ -15,6 +15,8 @@ This repository contains the full inference pipeline for a **privacy-first, low-
 | Hindi | Male | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
 | Hindi | Female | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
 | Bengali | Female | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
+| Marathi | male | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
+| Marathi | female | FastSpeech2-HS (Encoder + Decoder) | HiFi-GAN V1 | ONNX INT8 |
 
 ---
 
